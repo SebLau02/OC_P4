@@ -11,13 +11,128 @@ function editNav() {
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
+const closeBtn = document.querySelector(".close");
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
+closeBtn.addEventListener("click", launchModal);
 
 // launch modal form
 function launchModal() {
-  modalbg.style.display = "block";
+  modalbg.classList.toggle("active");
 }
 
+formData.forEach((element) => {
+  const input = Array.from(element.children).find(
+    (child) => child.tagName === "INPUT"
+  );
+  input.addEventListener("blur", (e) => validateInput(e, element));
+});
 
+const messages = {
+  last: {
+    condition: (value) => value.trim() === "",
+    error: "Veuillez entrer 2 caractères ou plus pour le champ du nom.",
+  },
+  first: {
+    condition: (value) => value.trim() === "",
+    error: "Veuillez entrer 2 caractères ou plus pour le champ du prénom.",
+  },
+  email: {
+    condition: (value) => {
+      if (value.trim() === "") {
+        return false;
+      } else {
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return regex.test(value);
+      }
+    },
+    error: "Le format de l'email n'est pas valide",
+  },
+  birthdate: {
+    condition: (value) => value.trim() === "",
+    error: "Vous devez entrer votre date de naissance.",
+  },
+  quantity: {
+    condition: (value) => value.trim() === "",
+    error: "Entrez au moins un nombre",
+  },
+  location: {
+    condition: (value) => value.trim() === "",
+    error: "Choisissez une localisation",
+  },
+  checkbox1: {
+    condition: (value) => !value,
+    error: "Vous devez accepter les CGU",
+  },
+};
+/**
+ * Validates the input field and creates an error message if the field is empty.
+ *
+ * @param {Event} e - The blur event object triggered when the input loses focus.
+ * @param {HTMLElement} c - The parent container element of the input field.
+ * @returns {void} This function doesn't return a value; it creates an error message if needed.
+ */
+function validateInput(e, c) {
+  const keys = Object.keys(messages);
+  keys.forEach((key) => {
+    if (
+      e.target.name === key &&
+      !Array.from(c.children).find(
+        (child) => child.className === "error-message"
+      )
+    ) {
+      const value = e.target.value;
+      if (messages[key].condition(value)) {
+        createMessage(e, c);
+      }
+    }
+  });
+}
+
+const createMessage = (e, c) => {
+  const container = c;
+  const name = e.target.name;
+  const message = document.createElement("span");
+  message.innerText = messages[name].error;
+  message.setAttribute("class", "error-message");
+  if (name === "checkbox1") {
+    container.insertBefore(message, container.children[2]);
+  } else {
+    container.appendChild(message);
+  }
+};
+
+const validate = () => {
+  formData.forEach((element) => {
+    const input = Array.from(element.children).find(
+      (child) => child.tagName === "INPUT"
+    );
+
+    if (input.name === "location") {
+      const location = Array.from(element.children).filter(
+        (child) => child.tagName === "INPUT"
+      );
+
+      if (
+        !location.some((value) => value.checked) &&
+        !Array.from(element.children).find(
+          (child) => child.className === "error-message"
+        )
+      ) {
+        createMessage({ target: { name: "location" } }, element);
+      }
+    } else if (input.id === "checkbox1") {
+      validateInput(
+        { target: { name: "checkbox1", value: input.checked } },
+        element
+      );
+    } else {
+      validateInput(
+        { target: { name: input.name, value: input.value } },
+        element
+      );
+    }
+  });
+  return false;
+};
