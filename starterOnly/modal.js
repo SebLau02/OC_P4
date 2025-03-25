@@ -41,10 +41,10 @@ const messages = {
   email: {
     condition: (value) => {
       if (value.trim() === "") {
-        return false;
+        return true;
       } else {
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return regex.test(value);
+        return !regex.test(value);
       }
     },
     error: "Le format de l'email n'est pas valide",
@@ -74,20 +74,20 @@ const messages = {
  * @returns {void} This function doesn't return a value; it creates an error message if needed.
  */
 function validateInput(e, c) {
-  const keys = Object.keys(messages);
-  keys.forEach((key) => {
-    if (
-      e.target.name === key &&
-      !Array.from(c.children).find(
-        (child) => child.className === "error-message"
-      )
-    ) {
-      const value = e.target.value;
-      if (messages[key].condition(value)) {
-        createMessage(e, c);
-      }
-    }
-  });
+  const key = e.target.name;
+  const isErrorMessagePresent = Array.from(c.children).find(
+    (child) => child.className === "error-message"
+  );
+  const value = e.target.value;
+  if (
+    e.target.name === key &&
+    !isErrorMessagePresent &&
+    messages[key].condition(value)
+  ) {
+    createMessage(e, c);
+  } else if (isErrorMessagePresent && !messages[key].condition(value)) {
+    removeErrorMessage(c);
+  }
 }
 
 const createMessage = (e, c) => {
@@ -104,35 +104,70 @@ const createMessage = (e, c) => {
 };
 
 const validate = () => {
-  formData.forEach((element) => {
+  if (isSomeFieldEmpty()) {
+    formData.forEach((element) => {
+      const input = Array.from(element.children).find(
+        (child) => child.tagName === "INPUT"
+      );
+
+      if (input.name === "location") {
+        const location = Array.from(element.children).filter(
+          (child) => child.tagName === "INPUT"
+        );
+
+        if (
+          !location.some((value) => value.checked) &&
+          !Array.from(element.children).find(
+            (child) => child.className === "error-message"
+          )
+        ) {
+          createMessage({ target: { name: "location" } }, element);
+        } else {
+          removeErrorMessage(element);
+        }
+      } else if (input.id === "checkbox1") {
+        validateInput(
+          { target: { name: "checkbox1", value: input.checked } },
+          element
+        );
+      } else {
+        validateInput(
+          { target: { name: input.name, value: input.value } },
+          element
+        );
+      }
+    });
+    return false;
+  } else {
+    alert("Nous avons bien reçu votre inscription");
+    return true;
+  }
+};
+
+function removeErrorMessage(container) {
+  const child = Array.from(container.children).find(
+    (child) => child.className === "error-message"
+  );
+  if (child) {
+    container.removeChild(child);
+  }
+}
+
+function isSomeFieldEmpty() {
+  return Array.from(formData).some((element) => {
     const input = Array.from(element.children).find(
       (child) => child.tagName === "INPUT"
     );
 
     if (input.name === "location") {
-      const location = Array.from(element.children).filter(
-        (child) => child.tagName === "INPUT"
+      const inputs = Array.from(element.children).filter(
+        (c) => c.tagName === "INPUT"
       );
-
-      if (
-        !location.some((value) => value.checked) &&
-        !Array.from(element.children).find(
-          (child) => child.className === "error-message"
-        )
-      ) {
-        createMessage({ target: { name: "location" } }, element);
-      }
+      return !inputs.some((input) => input.checked);
     } else if (input.id === "checkbox1") {
-      validateInput(
-        { target: { name: "checkbox1", value: input.checked } },
-        element
-      );
+      return !input.checked;
     } else {
-      validateInput(
-        { target: { name: input.name, value: input.value } },
-        element
-      );
+      return input.value === "";
     }
   });
-  return false;
-};
+}
