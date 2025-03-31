@@ -14,14 +14,17 @@ const formData = document.querySelectorAll(".formData");
 const closeBtn = document.querySelector(".close");
 
 // launch modal event
-modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
-closeBtn.addEventListener("click", launchModal);
+modalBtn.forEach((btn) => btn.addEventListener("click", toggleModal));
+closeBtn.addEventListener("click", toggleModal);
 
-// launch modal form
-function launchModal() {
+// toggle modal form
+function toggleModal() {
   modalbg.classList.toggle("active");
 }
 
+/**
+ * check each input element if value is valid
+ */
 formData.forEach((element) => {
   const input = Array.from(element.children).find(
     (child) => child.tagName === "INPUT"
@@ -29,6 +32,9 @@ formData.forEach((element) => {
   input.addEventListener("blur", (e) => validateInput(e, element));
 });
 
+/**
+ * messages for each input with validation conditions
+ */
 const messages = {
   last: {
     condition: (value) => value.trim() === "",
@@ -103,6 +109,10 @@ const createMessage = (e, c) => {
   }
 };
 
+/**
+ * check if all inputs are valid
+ * @returns boolean
+ */
 const validate = () => {
   if (isSomeFieldEmpty()) {
     formData.forEach((element) => {
@@ -144,6 +154,10 @@ const validate = () => {
   }
 };
 
+/**
+ * remove error message if input is valid and error message is present
+ * @param {input} container HTML input element
+ */
 function removeErrorMessage(container) {
   const child = Array.from(container.children).find(
     (child) => child.className === "error-message"
@@ -153,6 +167,17 @@ function removeErrorMessage(container) {
   }
 }
 
+/**
+ * Checks if any field in the form is empty or unchecked.
+ *
+ * This function iterates through all form data elements and checks for empty or unchecked inputs.
+ * It handles different types of inputs:
+ * - For 'location' inputs, it checks if any radio button is checked.
+ * - For 'checkbox1', it checks if the checkbox is checked.
+ * - For all other inputs, it checks if the value is empty.
+ *
+ * @returns {boolean} Returns true if any field is empty or unchecked, false otherwise.
+ */
 function isSomeFieldEmpty() {
   return Array.from(formData).some((element) => {
     const input = Array.from(element.children).find(
