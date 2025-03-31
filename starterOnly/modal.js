@@ -7,10 +7,13 @@ function editNav() {
   }
 }
 
+const isInputElement = (element) => {
+  return element.tagName === "INPUT";
+};
 // DOM Elements
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
-const formData = document.querySelectorAll(".formData");
+const inputsContainer = document.querySelectorAll(".formData");
 const closeBtn = document.querySelector(".close");
 
 // launch modal event
@@ -25,9 +28,9 @@ function toggleModal() {
 /**
  * check each input element if value is valid
  */
-formData.forEach((element) => {
-  const input = Array.from(element.children).find(
-    (child) => child.tagName === "INPUT"
+inputsContainer.forEach((element) => {
+  const input = Array.from(element.children).find((child) =>
+    isInputElement(child)
   );
   input.addEventListener("blur", (e) => validateInput(e, element));
 });
@@ -37,38 +40,74 @@ formData.forEach((element) => {
  */
 const messages = {
   last: {
-    condition: (value) => value.trim() === "",
+    action: (element, container) => {
+      validateInput(element, container);
+    },
+    condition: (params) => params.value.trim() === "",
     error: "Veuillez entrer 2 caractères ou plus pour le champ du nom.",
   },
   first: {
-    condition: (value) => value.trim() === "",
+    action: (element, container) => {
+      validateInput(element, container);
+    },
+    condition: (params) => params.value.trim() === "",
     error: "Veuillez entrer 2 caractères ou plus pour le champ du prénom.",
   },
   email: {
-    condition: (value) => {
-      if (value.trim() === "") {
+    action: (element, container) => {
+      validateInput(element, container);
+    },
+    condition: (params) => {
+      if (params.value.trim() === "") {
         return true;
       } else {
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return !regex.test(value);
+        return !regex.test(params.value);
       }
     },
     error: "Le format de l'email n'est pas valide",
   },
   birthdate: {
-    condition: (value) => value.trim() === "",
+    action: (element, container) => {
+      validateInput(element, container);
+    },
+    condition: (params) => params.value.trim() === "",
     error: "Vous devez entrer votre date de naissance.",
   },
   quantity: {
-    condition: (value) => value.trim() === "",
+    action: (element, container) => {
+      validateInput(element, container);
+    },
+    condition: (params) => params.value.trim() === "",
     error: "Entrez au moins un nombre",
   },
   location: {
-    condition: (value) => value.trim() === "",
+    action: (_, c) => {
+      const isCheckedLocation = Array.from(c.children)
+        .filter((child) => isInputElement(child))
+        .some((value) => value.checked);
+
+      const errorMessage = Array.from(c.children).find(
+        (child) => child.className === "error-message"
+      );
+
+      if (!isCheckedLocation && !errorMessage) {
+        createMessage({ target: { name: "location" } }, c);
+      }
+      if (isCheckedLocation && errorMessage) {
+        removeErrorMessage(c, errorMessage);
+      }
+    },
+    condition: (params) => {
+      return !params.radios.some((input) => input.checked);
+    },
     error: "Choisissez une localisation",
   },
   checkbox1: {
-    condition: (value) => !value,
+    action: (element, container) => {
+      validateInput(element, container);
+    },
+    condition: (params) => !params.checkbox,
     error: "Vous devez accepter les CGU",
   },
 };
@@ -81,18 +120,17 @@ const messages = {
  */
 function validateInput(e, c) {
   const key = e.target.name;
-  const isErrorMessagePresent = Array.from(c.children).find(
+  const errorMessage = Array.from(c.children).find(
     (child) => child.className === "error-message"
   );
   const value = e.target.value;
-  if (
-    e.target.name === key &&
-    !isErrorMessagePresent &&
-    messages[key].condition(value)
-  ) {
+
+  if (!errorMessage && messages[key].condition({ value: value })) {
     createMessage(e, c);
-  } else if (isErrorMessagePresent && !messages[key].condition(value)) {
-    removeErrorMessage(c);
+  }
+  if (errorMessage && !messages[key].condition({ value: value })) {
+    removeErrorMessage(c, errorMessage);
+    return;
   }
 }
 
@@ -100,6 +138,7 @@ const createMessage = (e, c) => {
   const container = c;
   const name = e.target.name;
   const message = document.createElement("span");
+
   message.innerText = messages[name].error;
   message.setAttribute("class", "error-message");
   if (name === "checkbox1") {
@@ -114,57 +153,44 @@ const createMessage = (e, c) => {
  * @returns boolean
  */
 const validate = () => {
-  if (isSomeFieldEmpty()) {
-    formData.forEach((element) => {
-      const input = Array.from(element.children).find(
-        (child) => child.tagName === "INPUT"
+  let isSomeFieldEmpty = true;
+  Array.from(inputsContainer).forEach((element) => {
+    const children = Array.from(element.children);
+    const input = children.find((child) => isInputElement(child));
+    const inputName = input.name || input.id;
+    const inputCondition = messages[inputName].condition;
+    const inputAction = messages[inputName].action;
+    const params = {
+      radios: children,
+      value: input.value,
+      checkbox: input.checked,
+    };
+    if (inputCondition(params)) {
+      isSomeFieldEmpty = !inputCondition(params);
+      inputAction(
+        {
+          target: {
+            name: inputName,
+            value: inputName === "checkbox1" ? input.checked : input.value,
+          },
+        },
+        element
       );
+    }
+  });
 
-      if (input.name === "location") {
-        const location = Array.from(element.children).filter(
-          (child) => child.tagName === "INPUT"
-        );
-
-        if (
-          !location.some((value) => value.checked) &&
-          !Array.from(element.children).find(
-            (child) => child.className === "error-message"
-          )
-        ) {
-          createMessage({ target: { name: "location" } }, element);
-        } else {
-          removeErrorMessage(element);
-        }
-      } else if (input.id === "checkbox1") {
-        validateInput(
-          { target: { name: "checkbox1", value: input.checked } },
-          element
-        );
-      } else {
-        validateInput(
-          { target: { name: input.name, value: input.value } },
-          element
-        );
-      }
-    });
-    return false;
-  } else {
+  if (isSomeFieldEmpty) {
     alert("Nous avons bien reçu votre inscription");
-    return true;
   }
+  return isSomeFieldEmpty;
 };
 
 /**
  * remove error message if input is valid and error message is present
  * @param {input} container HTML input element
  */
-function removeErrorMessage(container) {
-  const child = Array.from(container.children).find(
-    (child) => child.className === "error-message"
-  );
-  if (child) {
-    container.removeChild(child);
-  }
+function removeErrorMessage(container, errorMsg) {
+  container.removeChild(errorMsg);
 }
 
 /**
@@ -179,20 +205,17 @@ function removeErrorMessage(container) {
  * @returns {boolean} Returns true if any field is empty or unchecked, false otherwise.
  */
 function isSomeFieldEmpty() {
-  return Array.from(formData).some((element) => {
-    const input = Array.from(element.children).find(
-      (child) => child.tagName === "INPUT"
-    );
+  return Array.from(inputsContainer).some((element) => {
+    const children = Array.from(element.children);
+    const input = children.find((child) => isInputElement(child));
+    const inputName = input.name || input.id;
 
-    if (input.name === "location") {
-      const inputs = Array.from(element.children).filter(
-        (c) => c.tagName === "INPUT"
-      );
-      return !inputs.some((input) => input.checked);
-    } else if (input.id === "checkbox1") {
-      return !input.checked;
-    } else {
-      return input.value === "";
-    }
+    const inputCondition = messages[inputName].condition;
+    const params = {
+      radios: children,
+      value: input.value,
+      checkbox: input.checked,
+    };
+    return inputCondition(params);
   });
 }
