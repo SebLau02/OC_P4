@@ -1,11 +1,20 @@
 // DOM Elements
 const modalbg = document.querySelector(".bground");
-const modalBtns = document.querySelectorAll(".toggle-modal-btn");
+const modalBtns = document.querySelectorAll(".modal-btn");
+const closeModal = document.querySelector(".close-modal");
 
-// launch modal event
-modalBtns.forEach((btn) => btn.addEventListener("click", toggleModal));
-
-// launch modal form
-function toggleModal() {
-  modalbg.classList.toggle("active");
+// Close modal function
+function handleCloseModal() {
+  modalbg.classList.remove("active");
 }
+
+// Open modal function
+function openModal() {
+  modalbg.classList.add("active");
+}
+
+// open modal event
+modalBtns.forEach((btn) => btn.addEventListener("click", openModal));
+
+// close modal event
+closeModal.addEventListener("click", handleCloseModal);
