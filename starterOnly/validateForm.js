@@ -55,7 +55,6 @@ signupForm.addEventListener("submit", (e) => {
     !Array.from(formDataElements).some(
       (element) => element.dataset.errorVisible === "true"
     )
-  ) {
+  )
     document.querySelector(".modal-body form").classList.add("active");
-  }
 });
