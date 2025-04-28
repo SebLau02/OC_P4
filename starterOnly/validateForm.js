@@ -17,9 +17,6 @@ function toggleErrorMessage(input, formDataElement) {
 
 function validateRadioButtons(formDataElement) {
   const radios = formDataElement.querySelectorAll("input");
-  //   const isValid = Array.from(radios).some((radio) => radio.checked);
-  //   formDataElement.dataset.errorVisible = isValid ? "false" : "true";
-
   radios.forEach((radio) => {
     radio.addEventListener("click", () => {
       formDataElement.dataset.errorVisible = "false";
@@ -46,7 +43,6 @@ signupForm.addEventListener("submit", (e) => {
 
   formDataElements.forEach((formDataElement) => {
     const input = formDataElement.querySelector("input");
-
     if (input.type === "radio") {
       const radios = formDataElement.querySelectorAll("input");
       const isValid = Array.from(radios).some((radio) => radio.checked);
