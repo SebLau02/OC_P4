@@ -191,6 +191,29 @@ main {
 .modal-body {
   padding: 15px 8%;
   margin: 15px auto;
+
+  form ~ .confirm-message {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 83vh;
+    button {
+      margin-top: 0;
+    }
+    h2 {
+      font-size: 2.3rem;
+      text-align: center;
+      font-weight: 400;
+      margin: auto 0;
+    }
+  }
+}
+.modal-body form.active {
+  display: none;
+}
+.modal-body form.active ~ .confirm-message {
+  display: flex;
 }
 
 label {

@@ -1,7 +1,7 @@
 // DOM Elements
 const modalbg = document.querySelector(".bground");
 const modalBtns = document.querySelectorAll(".modal-btn");
-const closeModal = document.querySelector(".close-modal");
+const closeModalBtns = document.querySelectorAll(".close-modal");
 
 // Close modal function
 function handleCloseModal() {
@@ -17,4 +17,6 @@ function openModal() {
 modalBtns.forEach((btn) => btn.addEventListener("click", openModal));
 
 // close modal event
-closeModal.addEventListener("click", handleCloseModal);
+closeModalBtns.forEach((btn) =>
+  btn.addEventListener("click", handleCloseModal)
+);
