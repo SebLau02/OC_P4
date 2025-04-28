@@ -5,7 +5,7 @@ const validationRules = {
   text: (input) => input.value.length >= 2,
   email: (input) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value),
   date: (input) => !isNaN(new Date(input.value)),
-  number: (input) => !isNaN(input.value) && input.value >= 0,
+  number: (input) => !isNaN(input.value) && input.value.trim() !== "",
   checkbox: (input) => input.checked,
   radio: (input) => input.checked,
 };
