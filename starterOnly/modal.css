@@ -192,7 +192,7 @@ main {
   padding: 15px 8%;
   margin: 15px auto;
 
-  form ~ .confirm-message {
+  form > .confirm-message {
     display: none;
     flex-direction: column;
     align-items: center;
@@ -210,10 +210,12 @@ main {
   }
 }
 .modal-body form.active {
-  display: none;
-}
-.modal-body form.active ~ .confirm-message {
-  display: flex;
+  .form-g-container {
+    display: none;
+  }
+  .confirm-message {
+    display: flex;
+  }
 }
 
 label {
