@@ -1,25 +1,19 @@
 import {
   formContainer,
-  handleCloseModal,
   handleResetForm,
   openModal,
+  resetModalBtns,
+  signupForm,
   toggleErrorMessage,
   validateRadioButtons,
 } from "./utils.js";
 
 // DOM Elements
 const modalBtns = document.querySelectorAll(".modal-btn");
-const closeModalBtns = document.querySelectorAll(".close-modal");
-const signupForm = document.getElementById("signup-form");
 const formDataElements = document.querySelectorAll(".formData");
 
 // open modal event
 modalBtns.forEach((btn) => btn.addEventListener("click", openModal));
-
-// close modal event
-closeModalBtns.forEach((btn) =>
-  btn.addEventListener("click", handleCloseModal)
-);
 
 // Attache les événements d'entrée pour valider en temps réel
 formDataElements.forEach((formDataElement) => {
@@ -37,6 +31,7 @@ formDataElements.forEach((formDataElement) => {
 signupForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
+  // Valide chaque champ du formulaire
   formDataElements.forEach((formDataElement) => {
     const input = formDataElement.querySelector("input");
     if (input.type === "radio") {
@@ -47,17 +42,18 @@ signupForm.addEventListener("submit", (e) => {
       toggleErrorMessage(input, formDataElement);
     }
   });
+
+  // Si tous les champs sont valides, affiche le message de confirmation
   if (
     Array.from(formDataElements).every(
       (element) => element.dataset.errorVisible === "false"
     )
   ) {
+    // Fetch data
+    // display if res.status === 200
     formContainer.classList.add("hidden");
-    const resetModalBtns = document.querySelectorAll(".reset-modal");
     resetModalBtns.forEach((btn) =>
-      btn.addEventListener("click", () => {
-        handleResetForm(signupForm);
-      })
+      btn.addEventListener("click", handleResetForm)
     );
   }
 });

@@ -1,5 +1,9 @@
 const modalbg = document.querySelector(".bground");
+const closeModalBtns = document.querySelectorAll(".close-modal");
+
 export const formContainer = document.querySelector(".content.form-container");
+export const resetModalBtns = document.querySelectorAll(".reset-modal");
+export const signupForm = document.getElementById("signup-form");
 
 export const validationRules = {
   text: (input) => input.value.length >= 2,
@@ -26,13 +30,28 @@ export function validateRadioButtons(formDataElement) {
 // Close modal function
 export function handleCloseModal() {
   modalbg.classList.remove("active");
+  // remove close btn listener
+  closeModalBtns.forEach((btn) =>
+    btn.removeEventListener("click", handleCloseModal)
+  );
+  // remove reset btn listener
+  resetModalBtns.forEach((btn) =>
+    btn.removeEventListener("click", handleResetForm)
+  );
 }
-export const handleResetForm = (form) => {
-  form.reset();
+
+// Open modal function
+export function openModal() {
+  modalbg.classList.add("active");
+  // add close btn listener
+  closeModalBtns.forEach((btn) =>
+    btn.addEventListener("click", handleCloseModal)
+  );
+}
+
+// Close and Reset form function
+export const handleResetForm = () => {
+  signupForm.reset();
   formContainer.classList.remove("hidden");
   handleCloseModal();
 };
-
-export function openModal() {
-  modalbg.classList.add("active");
-}
