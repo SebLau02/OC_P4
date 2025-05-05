@@ -1,7 +1,11 @@
+import { toggleErrorMessage, validateRadioButtons } from "./utils.js";
+
 // DOM Elements
 const modalbg = document.querySelector(".bground");
 const modalBtns = document.querySelectorAll(".modal-btn");
 const closeModalBtns = document.querySelectorAll(".close-modal");
+const signupForm = document.getElementById("signup-form");
+const formDataElements = document.querySelectorAll(".formData");
 
 // Close modal function
 function handleCloseModal() {
@@ -20,3 +24,37 @@ modalBtns.forEach((btn) => btn.addEventListener("click", openModal));
 closeModalBtns.forEach((btn) =>
   btn.addEventListener("click", handleCloseModal)
 );
+
+// Attache les événements d'entrée pour valider en temps réel
+formDataElements.forEach((formDataElement) => {
+  const input = formDataElement.querySelector("input");
+  if (input.type === "radio") {
+    validateRadioButtons(formDataElement);
+  } else {
+    input.addEventListener("input", (e) => {
+      toggleErrorMessage(e.target, formDataElement);
+    });
+  }
+});
+
+// Validation lors de la soumission du formulaire
+signupForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  formDataElements.forEach((formDataElement) => {
+    const input = formDataElement.querySelector("input");
+    if (input.type === "radio") {
+      const radios = formDataElement.querySelectorAll("input");
+      const isValid = Array.from(radios).some((radio) => radio.checked);
+      formDataElement.dataset.errorVisible = isValid ? "false" : "true";
+    } else {
+      toggleErrorMessage(input, formDataElement);
+    }
+  });
+  if (
+    !Array.from(formDataElements).some(
+      (element) => element.dataset.errorVisible === "true"
+    )
+  )
+    document.querySelector(".modal-body form").classList.add("active");
+});
