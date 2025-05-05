@@ -1,3 +1,6 @@
+const modalbg = document.querySelector(".bground");
+export const formContainer = document.querySelector(".content.form-container");
+
 export const validationRules = {
   text: (input) => input.value.length >= 2,
   email: (input) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value),
@@ -18,4 +21,18 @@ export function validateRadioButtons(formDataElement) {
       formDataElement.dataset.errorVisible = "false";
     });
   });
+}
+
+// Close modal function
+export function handleCloseModal() {
+  modalbg.classList.remove("active");
+}
+export const handleResetForm = (form) => {
+  form.reset();
+  formContainer.classList.remove("hidden");
+  handleCloseModal();
+};
+
+export function openModal() {
+  modalbg.classList.add("active");
 }

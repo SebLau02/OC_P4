@@ -1,21 +1,17 @@
-import { toggleErrorMessage, validateRadioButtons } from "./utils.js";
+import {
+  formContainer,
+  handleCloseModal,
+  handleResetForm,
+  openModal,
+  toggleErrorMessage,
+  validateRadioButtons,
+} from "./utils.js";
 
 // DOM Elements
-const modalbg = document.querySelector(".bground");
 const modalBtns = document.querySelectorAll(".modal-btn");
 const closeModalBtns = document.querySelectorAll(".close-modal");
 const signupForm = document.getElementById("signup-form");
 const formDataElements = document.querySelectorAll(".formData");
-
-// Close modal function
-function handleCloseModal() {
-  modalbg.classList.remove("active");
-}
-
-// Open modal function
-function openModal() {
-  modalbg.classList.add("active");
-}
 
 // open modal event
 modalBtns.forEach((btn) => btn.addEventListener("click", openModal));
@@ -55,6 +51,13 @@ signupForm.addEventListener("submit", (e) => {
     Array.from(formDataElements).every(
       (element) => element.dataset.errorVisible === "false"
     )
-  )
-    document.querySelector(".content.form-container").classList.add("hidden");
+  ) {
+    formContainer.classList.add("hidden");
+    const resetModalBtns = document.querySelectorAll(".reset-modal");
+    resetModalBtns.forEach((btn) =>
+      btn.addEventListener("click", () => {
+        handleResetForm(signupForm);
+      })
+    );
+  }
 });
