@@ -186,36 +186,40 @@ main {
   position: relative;
   color: #fff;
   padding-top: 10px;
+
+  &.hidden {
+    display: none;
+
+    & ~ .confirmed {
+      display: block;
+    }
+  }
+
+  &.confirmed {
+    display: none;
+    animation: none;
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 83dvh;
+      h2 {
+        font-size: 2.3rem;
+        text-align: center;
+        font-weight: 400;
+        margin: auto 0;
+      }
+      .finish-modal {
+        margin: 0 auto;
+      }
+    }
+  }
 }
 
 .modal-body {
   padding: 15px 8%;
   margin: 15px auto;
-
-  form > .confirm-message {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 83vh;
-    button {
-      margin-top: 0;
-    }
-    h2 {
-      font-size: 2.3rem;
-      text-align: center;
-      font-weight: 400;
-      margin: auto 0;
-    }
-  }
-}
-.modal-body form.active {
-  .form-g-container {
-    display: none;
-  }
-  .confirm-message {
-    display: flex;
-  }
 }
 
 label {
