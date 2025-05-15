@@ -4,6 +4,7 @@ const closeModalBtns = document.querySelectorAll(".close-modal");
 export const formContainer = document.querySelector(".content.form-container");
 export const resetModalBtns = document.querySelectorAll(".reset-modal");
 export const signupForm = document.getElementById("signup-form");
+const html = document.querySelector("html");
 
 export const validationRules = {
   text: (input) => input.value.length >= 2,
@@ -30,6 +31,7 @@ export function validateRadioButtons(formDataElement) {
 // Close modal function
 export function handleCloseModal() {
   modalbg.classList.remove("active");
+  html.classList.remove("no-scroll");
   // remove close btn listener
   closeModalBtns.forEach((btn) =>
     btn.removeEventListener("click", handleCloseModal)
@@ -43,6 +45,7 @@ export function handleCloseModal() {
 // Open modal function
 export function openModal() {
   modalbg.classList.add("active");
+  html.classList.add("no-scroll");
   // add close btn listener
   closeModalBtns.forEach((btn) =>
     btn.addEventListener("click", handleCloseModal)

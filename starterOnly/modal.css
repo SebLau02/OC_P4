@@ -10,6 +10,11 @@
 }
 /* Landing Page */
 
+html {
+  &.no-scroll {
+    overflow: hidden;
+  }
+}
 body {
   margin: 0;
   display: flex;
