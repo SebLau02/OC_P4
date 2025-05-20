@@ -174,7 +174,7 @@ main {
   width: 100%;
   overflow: auto;
   background-color: rgba(26, 39, 156, 0.4);
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 .bground.active {
   display: block;
